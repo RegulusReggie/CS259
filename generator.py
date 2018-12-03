@@ -5,7 +5,7 @@ from skimage.io import imread
 
 class DataGenerator(keras.utils.Sequence):
     'Generates data for Keras'
-    def __init__(self, list_IDs, batch_size=32, dim=(512, 512), n_channels=3, shuffle=True):
+    def __init__(self, list_IDs, batch_size=32, dim=(128, 128), n_channels=3, shuffle=True):
         'Initialization'
         self.dim = dim
         self.batch_size = batch_size
@@ -42,19 +42,20 @@ class DataGenerator(keras.utils.Sequence):
         'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
         # Initialization
         X = np.empty((self.batch_size, *self.dim, self.n_channels))
-        y = np.empty((self.batch_size, *self.dim))
+        y = np.empty((self.batch_size, *self.dim, 1))
 
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
-        	train_image = imread('/mnt/dfs/reggie/isic/data/image/' + ID + '.jpg')
-        	train_image = resize(train_image, self.dim, order=1,
+            train_image = imread('/mnt/dfs/reggie/isic/train/image/' + ID + '.jpg')
+            train_image = resize(train_image, self.dim, order=1,
                        anti_aliasing=True) # bi-linear
 
             # Store sample
             X[i,] = train_image
 
-            train_mask = imread('/mnt/dfs/reggie/isic/data/mask/' + ID + '_segmentation.png')
-            train_mask = resize(train_mask, self.dim, order=0, anti_aliasing=True) # nearest neighbor
+            train_mask = imread('/mnt/dfs/reggie/isic/train/mask/' + ID + '_segmentation.png')
+            # train_mask = np.true_divide(train_mask, 255)
+            train_mask = resize(train_mask, self.dim + (1,), order=0, anti_aliasing=True) # nearest neighbor
 
             # Store class
             y[i,] = train_mask

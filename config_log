@@ -1,0 +1,130 @@
+batch normalization
+dropout
+batch size
+
+changed filter numbers doesn't change much
+
+input size 128 * 128
+
+11271700
+Adam, dice, Learning Rate scheduler (1e-4), Early Stopping (patience 5, val_loss), batch_size: 64
+
+result: 17 epochs, val_jaccard max: 0.8293
+
+11271700
+Adam, dice, Batch Normalization, Learning Rate scheduler (1e-4), Early Stopping (patience 5, val_loss), batch_size: 64
+
+result: 17 epochs, val_jaccard max: 0.8293
+
+11272130
+Adam, dice, Batch Normalization, Learning Rate scheduler (1e-3 first 10, 1e-4 afterwards), Early Stopping (patience 5, val_loss), batch_size: 64
+
+result: 15 epochs, val_jaccard max: 0.8158
+
+11280028
+Adam, dice, Batch Normalization, Learning Rate scheduler (1e-4 first 10, 1e-5 afterwards), Early Stopping (patience 5, val_loss), batch_size: 64
+
+result: 21 epochs, val_jaccard max: 0.8452
+
+11281002
+Adam, binary crossentropy, Batch Normalization, Learning Rate scheduler (1e-4 first 10, 1e-5 afterwards), Early Stopping (patience 5, jaccard), batch_size: 64
+
+result: 17 epochs, val_jaccard max: 0.8096
+
+11281423
+Adam, jaccard loss, Batch Normalization, Learning Rate scheduler (1e-4 first 10, 1e-5 afterwards), Early Stopping (patience 5, jaccard), batch_size: 64
+
+result: 29 epochs, val_jaccard max 0.8544
+
+11281618
+RMSProp, jaccard loss, Batch Normalization, Learning Rate scheduler (1e-4 first 10, 1e-5 afterwards), Early Stopping (patience 5, jaccard), batch_size: 64
+
+result: 45 epochs, val_jaccard max 0.86127
+
+11291200
+RMSProp, jaccard loss, Batch Normalization, Learning Rate scheduler (1e-4 first 10, 1e-5 afterwards), Early Stopping (patience 5, jaccard), batch_size: 32, rblock on concat
+
+result: 25 epochs, val_jaccard max 0.8490
+
+11291700
+RMSProp, jaccard loss, Batch Normalization, Learning Rate scheduler (1e-4 first 10, 1e-5 afterwards), Early Stopping (patience 5, jaccard), batch_size: 32, rblock on upconv every two
+
+result: 24 epochs, val_jaccard max 0.84383
+
+11292319
+RMSProp, jaccard loss, Batch Normalization, Learning Rate scheduler (1e-4 first 10, 1e-5 afterwards), Early Stopping (patience 5, jaccard), batch_size: 32, rblock on upconv every two and concat
+
+result: 19 epochs, val_jaccard max 0.84414
+
+11301013 - comparison experiment
+RMSProp, jaccard loss, Batch Normalization, Learning Rate scheduler (1e-4 first 10, 1e-5 afterwards), Early Stopping (patience 5, jaccard), batch_size: 32
+
+result: 15 epochs, val_jaccard max 0.84338
+
+11301258
+RMSProp, 0.7 * jaccard + 0.3 * dice loss, Batch Normalization, Learning Rate scheduler (1e-4 first 10, 1e-5 afterwards), Early Stopping (patience 5, jaccard), batch_size: 64
+
+result: 32 epochs, val_jaccard max 0.8547
+
+11301856
+RMSProp, 0.8 * jaccard + 0.2 * dice loss, Batch Normalization, Learning Rate scheduler (1e-4 first 10, 1e-5 afterwards), Early Stopping (patience 5, jaccard), batch_size: 64
+
+result: 36 epochs, val_jaccard max 0.8574
+
+12010032
+RMSProp, jaccard loss, Batch Normalization, Learning Rate scheduler (1e-4 first 10, 1e-5 afterwards), Early Stopping (patience 5, jaccard), batch_size: 64, rblock on concat, input size 96 * 96
+
+result: 47 epochs, val_jaccard max 0.8728
+
+12010921
+RMSProp, jaccard loss, Batch Normalization, Learning Rate scheduler (1e-4 first 10, 1e-5 afterwards), Early Stopping (patience 5, jaccard), batch_size: 64, rblock on upconv every two, input size 96 * 96
+
+result: 49 epochs, val_jaccard max 0.8644
+
+12010921
+RMSProp, jaccard loss, Batch Normalization, Learning Rate scheduler (1e-4 first 10, 1e-5 afterwards), Early Stopping (patience 5, jaccard), batch_size: 64, rblock on upconv every two + concat, input size 96 * 96
+
+result: 35 epochs, val_jaccard max 0.8657
+
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 384.130                Driver Version: 384.130                   |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  GeForce GTX 108...  Off  | 00000000:04:00.0 Off |                  N/A |
+| 20%   35C    P0    59W / 250W |      0MiB / 11172MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+|   1  GeForce GTX 108...  Off  | 00000000:05:00.0 Off |                  N/A |
+| 20%   31C    P0    59W / 250W |      0MiB / 11172MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+|   2  GeForce GTX 108...  Off  | 00000000:06:00.0 Off |                  N/A |
+| 20%   38C    P0    60W / 250W |      0MiB / 11172MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+|   3  GeForce GTX 108...  Off  | 00000000:07:00.0 Off |                  N/A |
+| 20%   36C    P0    59W / 250W |      0MiB / 11172MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+|   4  GeForce GTX 108...  Off  | 00000000:08:00.0 Off |                  N/A |
+| 20%   31C    P0    60W / 250W |      0MiB / 11172MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+|   5  GeForce GTX 108...  Off  | 00000000:0B:00.0 Off |                  N/A |
+| 20%   29C    P0    61W / 250W |      0MiB / 11172MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+|   6  GeForce GTX 108...  Off  | 00000000:0C:00.0 Off |                  N/A |
+| 20%   32C    P0    60W / 250W |      0MiB / 11172MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+|   7  GeForce GTX 108...  Off  | 00000000:0D:00.0 Off |                  N/A |
+| 20%   35C    P0    59W / 250W |      0MiB / 11172MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+|   8  GeForce GTX 108...  Off  | 00000000:0E:00.0 Off |                  N/A |
+| 20%   34C    P0    59W / 250W |      0MiB / 11172MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+|   9  GeForce GTX 108...  Off  | 00000000:0F:00.0 Off |                  N/A |
+| 20%   35C    P0    60W / 250W |      0MiB / 11172MiB |      2%      Default |
++-------------------------------+----------------------+----------------------+
+                                                                               
++-----------------------------------------------------------------------------+
+| Processes:                                                       GPU Memory |
+|  GPU       PID   Type   Process name                             Usage      |
+|=============================================================================|
+|  No running processes found                                                 |

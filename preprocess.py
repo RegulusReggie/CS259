@@ -1,82 +1,83 @@
-#!/usr/bin/env python
 
-from PIL import Image
+# coding: utf-8
 
-import numpy as np
+# In[11]:
+
+
 import os
-import sys
-import json
+import random
+import numpy as np
+from skimage.transform import *
+from skimage.io import imsave, imread
 
-raw_data_path = 'data/raw/'
-gt_data_path = 'data/gt/'
-raw_output_path = 'npy/raw/'
-gt_output_path = 'npy/gt/'
-img_info = []
-gt_info = []
 
-def read_image():
-	max_height = max_width = max_size = 0
-	min_height = min_width = min_size = 2 ** 32 - 1	
+# In[33]:
 
-	try:
-		os.mkdir(raw_output_path)
-		os.mkdir(gt_output_path)
-	except:
-		pass
 
-	images = os.listdir(raw_data_path)
-	for filename in images:
-		if not (filename.endswith('.jpg') or filename.endswith('.jpeg') or filename.endswith('.png')): continue
-		info = {}
-		info["name"] = filename
-		tokens = filename.split(".")
-		img = Image.open(raw_data_path + filename)
-		img_np = np.asarray(img)
-		height, width, _ = img_np.shape
-		info["size"] = {
-			"height": height,
-			"width": width
-		}			
-		np.save(os.path.join(raw_output_path, tokens[0] + '.npy'), img_np)
-		img_info.append(info)
-		max_height = max(max_height, height)
-		min_height = min(min_height, height)
-		max_width = max(max_width, width)
-		min_width = min(min_width, width)
-		max_size = max(max_size, height * width)
-		min_size = min(min_size, height * width)
+def aug_rotate(image, deg):
+    return rotate(image, deg)
 
-	print("Height max/min:", max_height, min_height)
-	print("Width max/min:", max_width, min_width)
-	print("Size max/min:", max_size, min_size)
+def aug_flipud(image):
+    return np.flipud(image)
 
-	with open('general', 'w') as f:
-		f.write("Height max/min: {0} {1}\n".format(max_height, min_height))
-		f.write("Width max/min: {0} {1}\n".format(max_width, min_width))
-		f.write("Size max/min: {0} {1}\n".format(max_size, min_size))
+def aug_fliplr(image):
+    return np.fliplr(image)
 
-	with open('image_info.json', 'w') as f:
-		f.write(json.dumps(img_info))
+def aug_translatex(image, x):
+    return warp(image, EuclideanTransform(translation=(x, 0)))
 
-	gts = os.listdir(gt_data_path)
-	for filename in gts:
-		info = {}
-		info["name"] = filename
-		if not (filename.endswith('.jpg') or filename.endswith('.jpeg') or filename.endswith('.png')): continue
-		tokens = filename.split(".")
-		img = Image.open(gt_data_path + filename)
-		img_np = np.asarray(img)
-		# png binary image only 0 or 1
-		height, width = img_np.shape
-		np.save(os.path.join(gt_output_path, tokens[0] + '.npy'), img_np)
-		info["size"] = {
-			"height": height,
-			"width": width
-		}			
-		gt_info.append(info)
+def aug_translatey(image, y):
+    return warp(image, EuclideanTransform(translation=(0, y)))
 
-	with open('gt_info.json', 'w') as f:
-		f.write(json.dumps(gt_info))
 
-if __name__ == '__main__':
-	read_image()
+# In[40]:
+
+
+images = os.listdir('data/image')
+
+augmentations = [
+    aug_rotate,
+    aug_flipud,
+    aug_fliplr,
+    aug_translatex,
+    aug_translatey
+]
+
+translate_range = list(range(-51, 0)) + list(range(1, 52))
+
+count = 0
+for filename in images:
+    filename = filename.split('.')[0]
+    image = imread('data/image/' + filename + '.jpg')
+    mask = imread('data/mask/' + filename + '_segmentation.png')
+    
+    imsave('train/image/' + filename + '.jpg', image)
+    imsave('train/mask/' + filename + '_segmentation.png', mask)
+    
+    samples = random.sample(range(5), 4)
+    rotate_deg = random.randint(45, 315)
+    translatex = random.choice(translate_range)
+    translatey = random.choice(translate_range)
+    for (i, aug_idx) in enumerate(samples):    
+
+        if aug_idx == 1 or aug_idx == 2:
+            aug_image = augmentations[aug_idx](image)
+            aug_mask = augmentations[aug_idx](mask)
+
+        if aug_idx == 0:
+            aug_image = augmentations[aug_idx](image, rotate_deg)
+            aug_mask = augmentations[aug_idx](mask, rotate_deg)
+        if aug_idx == 3:
+            aug_image = augmentations[aug_idx](image, translatex)
+            aug_mask = augmentations[aug_idx](mask, translatex)    
+        if aug_idx == 4:
+            aug_image = augmentations[aug_idx](image, translatey)
+            aug_mask = augmentations[aug_idx](mask, translatey)
+
+        imsave('train/image/' + filename + '_' + str(i) + '.jpg', aug_image)
+        imsave('train/mask/' + filename + '_' + str(i) + '_segmentation.png', aug_mask)
+    count += 1
+    if count % 100 == 0:
+        print(count)
+    
+
